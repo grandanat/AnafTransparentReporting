@@ -45,9 +45,17 @@ public class FileUtils {
         }
 
         for (ReportEntry entry : resultList) {
-            if(!StringUtils.isEmpty(entry.getUrlPdf())) downloadFile(entry.getUrlPdf(), entry.getIndex(), path);
-            if(!StringUtils.isEmpty(entry.getUrlXls())) downloadFile(entry.getUrlXls(), entry.getIndex(), path);
-            if(!StringUtils.isEmpty(entry.getUrlXml())) downloadFile(entry.getUrlXml(), entry.getIndex(), path);
+
+            if(!StringUtils.isEmpty(entry.getUrlPdf())) {
+                boolean isMissingdata = downloadFile(entry.getUrlPdf(), entry.getIndex(), path);
+                entry.setMissingData(isMissingdata);
+            }
+            if(!StringUtils.isEmpty(entry.getUrlXls())) {
+                downloadFile(entry.getUrlXls(), entry.getIndex(), path);
+            }
+            if(!StringUtils.isEmpty(entry.getUrlXml())) {
+                downloadFile(entry.getUrlXml(), entry.getIndex(), path);
+            }
         }
     }
 

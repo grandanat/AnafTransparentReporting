@@ -49,7 +49,7 @@ public class AnafReportsScrapper {
         List<ReportType> reportTypes = Arrays.asList(TIP_BUGET_AGREGAT);
         List<SectorBugetar> sectors = Arrays.asList(BUGET_DE_STAT, BUGET_LOCAL);
 
-        int year = 2016;
+        int year = 2017;
 
         extractAnafReports(reportTypes, sectors, year, dirPath);
     }
@@ -79,7 +79,7 @@ public class AnafReportsScrapper {
         List<ReportEntry> resultList = new ArrayList<ReportEntry>();
 
         boolean forceExit = false;
-        while (hasMoreRows && !forceExit && crtPage<2000) {
+        while (hasMoreRows && !forceExit && crtPage < 10000) {
             String params = String.format(SEARCH_URL_PARAMS_PATTERN, year, index, sector.getCode(),reportType.getCode(), crtPage);
 
             String url = SEARCH_URL_P1 + params + SEARCH_URL_P2;
