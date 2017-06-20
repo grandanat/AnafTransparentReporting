@@ -118,6 +118,7 @@ public class ReportEntry {
                 ", urlPdf='" + urlPdf + '\'' +
                 ", urlXls='" + urlXls + '\'' +
                 ", urlXml='" + urlXml + '\'' +
+                ", missingData='" + missingData + '\'' +
                 '}';
     }
 
@@ -131,7 +132,8 @@ public class ReportEntry {
                 ", " + ordonator +
                 ", " + urlPdf +
                 ", " + urlXls +
-                ", " + urlXml;
+                ", " + urlXml +
+                ", " + missingData;
     }
 
     public void addUrl(String url) {
