@@ -1,6 +1,9 @@
-# introWebScraping
-Code example for my blog
+# Anaf Reports Scraper
 
-This repo contains the code of this [blog post](http://ksah.in/introduction-to-web-scraping-with-java/)
+This small application, opens anaf pages and extracts reports data.
+
+It uses html unit library
+
+
 
 

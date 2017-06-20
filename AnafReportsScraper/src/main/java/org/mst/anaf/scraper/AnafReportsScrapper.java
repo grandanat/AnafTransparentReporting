@@ -1,4 +1,4 @@
-package org.mst.anaf;
+package org.mst.anaf.scraper;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mst.anaf.ReportFilter.ReportType;
-import static org.mst.anaf.ReportFilter.SectorBugetar;
-import static org.mst.anaf.ReportFilter.ReportType.*;
-import static org.mst.anaf.ReportFilter.SectorBugetar.*;
+import static org.mst.anaf.scraper.ReportFilter.ReportType;
+import static org.mst.anaf.scraper.ReportFilter.SectorBugetar;
+import static org.mst.anaf.scraper.ReportFilter.ReportType.*;
+import static org.mst.anaf.scraper.ReportFilter.SectorBugetar.*;
 
 /**
  * Created by MarianStrugaru on 6/19/2017.

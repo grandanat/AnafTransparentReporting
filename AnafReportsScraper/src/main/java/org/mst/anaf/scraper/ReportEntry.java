@@ -1,4 +1,4 @@
-package org.mst.anaf;
+package org.mst.anaf.scraper;
 
 public class ReportEntry {
 
