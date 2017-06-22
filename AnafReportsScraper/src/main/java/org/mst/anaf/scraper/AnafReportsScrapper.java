@@ -1,5 +1,10 @@
 package org.mst.anaf.scraper;
 
+import com.beust.jcommander.IStringConverter;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.EnumConverter;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -17,8 +22,6 @@ import java.util.List;
 
 import static org.mst.anaf.scraper.ReportFilter.ReportType;
 import static org.mst.anaf.scraper.ReportFilter.SectorBugetar;
-import static org.mst.anaf.scraper.ReportFilter.ReportType.*;
-import static org.mst.anaf.scraper.ReportFilter.SectorBugetar.*;
 
 /**
  * Created by MarianStrugaru on 6/19/2017.
@@ -35,30 +38,47 @@ public class AnafReportsScrapper {
 
     public static String ANAF_REPORTS_DATA = "../anaf_reports/";
 
+    @Parameter(names = "-reportType")
+    private List<ReportType> reportTypes = Arrays.asList(ReportType.values());
+
+    @Parameter(names = "-sector")
+    private List<SectorBugetar> sectors = Arrays.asList(SectorBugetar.values());
+
+    @Parameter(names = "-year", description = "An (2016, 2017)")
+    private int year = 0;
+
+    @Parameter(names = "-pageOffset", description = "Page offset to start extraction")
+    private int pageOffset = 0;
+
+    @Parameter(names = "-outPath", description = "Output folder")
+    private String outPath = ANAF_REPORTS_DATA;
+
     public static void main(String[] args) throws IOException {
 
-        Path dirPath = Paths.get(ANAF_REPORTS_DATA);
+        AnafReportsScrapper main = new AnafReportsScrapper();
+        JCommander.newBuilder()
+                .addObject(main)
+                .build()
+                .parse(args);
 
-//        List<ReportType> reportTypes = Arrays.asList(ReportType.values());
-//        List<SectorBugetar> sectors = Arrays.asList(SectorBugetar.values());
-
-//        List<ReportType> reportTypes = Arrays.asList(ReportType.values());
-//        List<SectorBugetar> sectors = Arrays.asList(BUGET_ASIG_SOC, BUGET_SOMAJ, BUGET_SANATATE);
-
-        List<ReportType> reportTypes = Arrays.asList(TIP_BUGET_INDIVIDUAL);
-        List<SectorBugetar> sectors = Arrays.asList(BUGET_LOCAL);
-
-        int year = 2017;
-
-        extractAnafReports(reportTypes, sectors, year, dirPath);
+        main.extractAnafReports();
     }
 
-    public static void extractAnafReports(List<ReportType> reportTypes, List<SectorBugetar> sectors, int year, Path dirPath) throws IOException {
+    public void extractAnafReports() throws IOException {
+        Path dirPath = Paths.get(outPath);
+        extractAnafReports(reportTypes, sectors, year, dirPath, pageOffset);
+    }
+
+    public void extractAnafReports(List<ReportType> reportTypes, List<SectorBugetar> sectors, int year, Path dirPath) throws IOException {
+        extractAnafReports(reportTypes, sectors, year, dirPath, 0);
+    }
+
+    public void extractAnafReports(List<ReportType> reportTypes, List<SectorBugetar> sectors, int year, Path dirPath, int pageOffset) throws IOException {
         for (ReportType rType : reportTypes) {
             for (SectorBugetar sector : sectors) {
                 log.info(String.format("START Extracting ANAF reports with reportType=%s(%s) and sector=%s(%s), year=%d", rType, rType.getCode(), sector, sector.getCode(), year));
                 try {
-                    extractAnafReports(rType, sector, year, dirPath);
+                    extractAnafReports(rType, sector, year, dirPath, pageOffset);
                 } catch (Exception e) {
                     log.error(String.format("ERROR while extracting ANAF reports with reportType=%s and sector=%s", rType, sector), e);
                 }
@@ -67,19 +87,19 @@ public class AnafReportsScrapper {
         }
     }
 
-    public static void extractAnafReports(ReportType reportType, SectorBugetar sector, int year, Path dirPath) throws IOException {
+    public void extractAnafReports(ReportType reportType, SectorBugetar sector, int year, Path dirPath, int pageOffset) throws IOException {
         boolean hasMoreRows = true;
 
         WebClient webClient = getWebClient(SEARCH_URL);
-        int index = 0;
         int nrRowsPerpage = 25;
-        int crtPage = 1;
+        int index = pageOffset * nrRowsPerpage;
+        int crtPage = pageOffset + 1;
 
         List<ReportEntry> resultList = new ArrayList<ReportEntry>();
 
         boolean forceExit = false;
         try {
-            while (hasMoreRows && !forceExit && crtPage < 10000) {
+            while (hasMoreRows && !forceExit && crtPage < 100000) {
                 String params = String.format(SEARCH_URL_PARAMS_PATTERN, year, index, sector.getCode(), reportType.getCode(), crtPage);
 
                 String url = SEARCH_URL_P1 + params + SEARCH_URL_P2;
@@ -95,7 +115,12 @@ public class AnafReportsScrapper {
                 resultList.addAll(partList);
                 log.info(String.format("Extracted report=%s(%s), sector=%s(%s), year=%d, page: %5s, index: %6s, url: %s", reportType, reportType.getCode(), sector, sector.getCode(), year, crtPage, index, url));
 
-                index = index + nrRowsPerpage;
+                if (crtPage % 300 == 0) {
+                    FileUtils.saveResultInCSVFile(reportType.getCode(), sector.getCode(), year, resultList, dirPath);
+                    log.info(String.format("Extracted partially report data: report=%s(%s), sector=%s(%s), year=%d: %d reports in total", reportType, reportType.getCode(), sector, sector.getCode(), year, resultList.size()));
+                }
+
+                index += nrRowsPerpage;
                 crtPage++;
             }
         } finally {
@@ -105,7 +130,7 @@ public class AnafReportsScrapper {
     }
 
 
-    private static List<ReportEntry> extractDataFromResultTable(HtmlPage page) {
+    private List<ReportEntry> extractDataFromResultTable(HtmlPage page) {
         // extract datafrom table
         List<ReportEntry> list = new ArrayList<ReportEntry>(25);
         HtmlTable table = (HtmlTable) page.getByXPath("//table[@class='raport']").get(0);
@@ -135,7 +160,7 @@ public class AnafReportsScrapper {
         return list;
     }
 
-    public static WebClient getWebClient(String url) {
+    public WebClient getWebClient(String url) {
 
         WebClient webClient = new WebClient();
         webClient.getOptions().setCssEnabled(false);

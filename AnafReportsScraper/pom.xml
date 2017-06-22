@@ -16,22 +16,50 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-        </plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>org.mst.anaf.scraper.AnafReportsScrapper</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
+		</plugins>
     </build>
 
 	<dependencies>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>4.3.9.RELEASE</version>
+			<groupId>com.beust</groupId>
+			<artifactId>jcommander</artifactId>
+			<version>1.72</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
+		<!--<dependency>-->
+			<!--<groupId>org.springframework</groupId>-->
+			<!--<artifactId>spring-core</artifactId>-->
+			<!--<version>4.3.9.RELEASE</version>-->
+		<!--</dependency>-->
 
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
-			<version>2.19</version>
+			<version>2.21</version>
 		</dependency>
 
 	</dependencies>

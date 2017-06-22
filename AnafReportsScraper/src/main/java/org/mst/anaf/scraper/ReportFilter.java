@@ -16,6 +16,15 @@ public class ReportFilter {
         public String getCode(){
             return code;
         }
+
+        public static ReportType fromCode(String code) {
+            for (ReportType e : values()) {
+                if (code.equalsIgnoreCase(e.getCode())) {
+                    return e;
+                }
+            }
+            return null;
+        }
     }
 
     public enum SectorBugetar {
@@ -32,6 +41,15 @@ public class ReportFilter {
 
         public String getCode(){
             return code;
+        }
+
+        public static SectorBugetar fromCode(String code) {
+            for (SectorBugetar e : values()) {
+                if (code.equalsIgnoreCase(e.getCode())) {
+                    return e;
+                }
+            }
+            return null;
         }
     }
 
