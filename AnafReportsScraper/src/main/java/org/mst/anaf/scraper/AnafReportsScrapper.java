@@ -1,10 +1,7 @@
 package org.mst.anaf.scraper;
 
-import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.EnumConverter;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -36,7 +33,7 @@ public class AnafReportsScrapper {
     private static String SEARCH_URL_PARAMS_PATTERN = "/act/id=0/m=view/p=idSursa/p=idAn=%d/p=cuiOcp/p=idDecl/p=frmPage=frmPage/p=nrCrt=%s/p=codFiscal/p=search=Cauta/p=idSectBug=%s/p=idLuna=0/p=idTipRaport=%s/p=idJudet/p=denEp/p=page=%s";
     private static String SEARCH_URL_P2 = "/p=denEpOcp/359130195711/=/#Z7_G8H019S0JO6PD0APPU139A00G3')";
 
-    public static String ANAF_REPORTS_DATA = "../anaf_reports/";
+    public static String ANAF_REPORTS_DATA = "../../anaf_reports/";
 
     @Parameter(names = "-reportType")
     private List<ReportType> reportTypes = Arrays.asList(ReportType.values());
@@ -113,9 +110,9 @@ public class AnafReportsScrapper {
                 FileUtils.saveResultFiles(reportType.getCode(), sector.getCode(), year, partList, dirPath);
 
                 resultList.addAll(partList);
-                log.info(String.format("Extracted report=%s(%s), sector=%s(%s), year=%d, page: %5s, index: %6s, url: %s", reportType, reportType.getCode(), sector, sector.getCode(), year, crtPage, index, url));
+                log.info(String.format("Extracted report=%s(%s), sector=%s(%s), year=%d, page: %5s, index: %6s, url: %s", reportType, reportType.getCode(), sector, sector.getCode(), year, crtPage, index, ""/*url*/));
 
-                if (crtPage % 300 == 0) {
+                if (crtPage % 200 == 0) {
                     FileUtils.saveResultInCSVFile(reportType.getCode(), sector.getCode(), year, resultList, dirPath);
                     log.info(String.format("Extracted partially report data: report=%s(%s), sector=%s(%s), year=%d: %d reports in total", reportType, reportType.getCode(), sector, sector.getCode(), year, resultList.size()));
                 }

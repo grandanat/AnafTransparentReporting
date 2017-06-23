@@ -28,8 +28,7 @@ public class FileUtils {
                 reportType, sector, year, df.format(new Date()));
         Path path = dirPath.resolve(fileName);
 
-        try (BufferedWriter writer = Files.newBufferedWriter(path))
-        {
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             for (ReportEntry entry : resultList) {
                 writer.write(entry.asListString() + "\r\n");
             }
@@ -46,14 +45,14 @@ public class FileUtils {
 
         for (ReportEntry entry : resultList) {
 
-            if(!StringUtils.isEmpty(entry.getUrlPdf())) {
+            if (!StringUtils.isEmpty(entry.getUrlPdf())) {
                 boolean isMissingdata = downloadFile(entry.getUrlPdf(), entry.getIndex(), path);
                 entry.setMissingData(isMissingdata);
             }
-            if(!StringUtils.isEmpty(entry.getUrlXls())) {
+            if (!StringUtils.isEmpty(entry.getUrlXls())) {
                 downloadFile(entry.getUrlXls(), entry.getIndex(), path);
             }
-            if(!StringUtils.isEmpty(entry.getUrlXml())) {
+            if (!StringUtils.isEmpty(entry.getUrlXml())) {
                 downloadFile(entry.getUrlXml(), entry.getIndex(), path);
             }
         }
@@ -62,8 +61,8 @@ public class FileUtils {
 
     public static boolean downloadFile(String url, String index, Path dirPath) {
 
-            String fileName = url.substring(url.lastIndexOf("/") + 1);
-            fileName = String.format("%5s__", index).replace(" ", "0") + fileName;
+        String fileName = url.substring(url.lastIndexOf("/") + 1);
+        fileName = String.format("%6s__", index).replace(" ", "0") + fileName;
 
         try {
             org.apache.commons.io.FileUtils.copyURLToFile(new URL(url.replace("https", "http")), dirPath.resolve(fileName).toFile());
